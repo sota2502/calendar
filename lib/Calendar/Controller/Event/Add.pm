@@ -21,12 +21,39 @@ Catalyst Controller.
 
 =cut
 
-sub index :Path :Args(0) {
+sub index :Path :Args(2) {
     my ( $self, $c ) = @_;
 
-    $c->response->body('Matched Calendar::Controller::Event::Add in Event::Add.');
 }
 
+=head2 commit
+
+=cut
+sub commit :Local :Args(0) {
+    my ($self, $c) = @_;
+
+    ## ToDo: require validation
+
+    my %param = map {
+        +($_ => $c->req->param($_))
+    } qw/title description scheduled_datetime attend_limit/;
+
+    my $resultset = $c->model('DBIC::Calendar');
+    my $now = $c->now;
+
+    $param{page_id}   = $c->page_id;
+    $param{module_id} = $c->module_id;
+    $param{created_datetime} = $now;
+
+    my $row = $resultset->create({%param});
+    unless ( $row ) {
+        $c->response->body('Failed Creating Event');
+    }
+
+    my $url = sprintf '/event/view/%d', $row->event_id;
+
+    $c->res->redirect($c->uri_for($url));
+}
 
 =head1 AUTHOR
 

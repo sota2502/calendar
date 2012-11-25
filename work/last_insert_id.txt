@@ -1,0 +1,61 @@
+テーブルのIDを採番する際、通常はAUTO_INCREMENTを使うと思いますが、<br />
+レコード数・増数が多く、DBのShardingが求められる場合、AUTO_INCREMENTは使えません。<br />
+そのため、IDを払い出す採番用のテーブルを用意し、レコード追加時のIDを管理します。<br />
+<br />
+まず準備としてテーブルを作成し、IDを数え上げるためのレコードを1行だけ追加します。<br />
+<br />
+# テーブルの作成<br />
+CREATE TABLE `id_pot` (<br />
+  `id` bigint(10) unsigned NOT NULL<br />
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;<br />
+<br />
+# IDを数え上げるためのレコードを1行だけ追加<br />
+INSERT INTO id_pot SET id = 0;<br />
+<br />
+<br />
+この採番用テーブルをDBIから利用する場合は下記のようなコードになります。<br />
+<br />
+my $dbh = DBI->connect(<br />
+    'dbi:mysql:database', 'user', '',<br />
+);<br />
+my $sth = $dbh->prepare(<br />
+    'UPDATE id_pot SET id = LAST_INSERT_ID(id + 1)'<br />
+);<br />
+$sth->execute();<br />
+print $sth->{mysql_insertid}; ## 1が出力される<br />
+<br />
+<br />
+最近のアプリケーションだと上のようにDBIで生のクエリを扱うことはまれで、<br />
+DBIx::ClassなどのORMを使うことが多いでしょう。<br />
+DBIx::Class利用して先ほどと同じことをする場合は以下のようになります。<br />
+<br />
+<br />
+use strict;<br />
+use warnings;<br />
+use DBIx::Class::Schema::Loader;<br />
+<br />
+my $schema = DBIx::Class::Schema::Loader->connect(<br />
+    'dbi:mysql:database', 'user', '',<br />
+);<br />
+<br />
+my $resultset = $schema->resultset('IdPot');<br />
+$resultset->search->update({<br />
+    id => \'LAST_INSERT_ID(id + 1)',<br />
+});<br />
+print $schema->storage->last_insert_id; ## 1が出力される<br />
+<br />
+<br />
+個人的に詰まったのは<br />
+<ul><br />
+<li>SET id = id + 1 のインクリメントを行うSQL文のDBIx::Classでの実行</li><br />
+<li>LASET_INSERT_IDの取得</li><br />
+</ul><br />
+でした。<br />
+<br />
+ここの肝は下記の部分です。<br />
+<br />
+<br />
+$resultset->search->update({<br />
+    id => \'LAST_INSERT_ID(id + 1)',<br />
+});<br />
+$schema->storage->last_insert_id;<br />

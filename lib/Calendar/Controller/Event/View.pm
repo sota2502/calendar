@@ -24,9 +24,19 @@ Catalyst Controller.
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
 
-    $c->response->body('Matched Calendar::Controller::Event::View in Event::View.');
 }
 
+=head2 default
+
+Standard 404 error page
+
+=cut
+
+sub default :Path {
+    my ( $self, $c ) = @_;
+    $c->response->body( 'Page not found' );
+    $c->response->status(404);
+}
 
 =head1 AUTHOR
 
