@@ -26,6 +26,12 @@ sub index :Path :Args(0) {
 
 }
 
+sub main :ChainedParent :PathPart('view') :Args(1) {
+    my ( $self, $c, $event_id ) = @_;
+
+    $c->res->body("Event: $event_id");
+}
+
 =head2 default
 
 Standard 404 error page

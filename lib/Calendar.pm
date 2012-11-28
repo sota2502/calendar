@@ -2,6 +2,7 @@ package Calendar;
 use Moose;
 use namespace::autoclean;
 use Date::Calc;
+use YAML::Syck;
 
 use Catalyst::Runtime 5.80;
 
@@ -60,6 +61,16 @@ sub module_id {
     return $c->req->arguments->[1];
 }
 
+
+sub graph_api {
+    my $self = shift;
+
+    return $self->{_graph_api} if ( defined $self->{_graph_api} );
+
+    my $path = $self->path_to('api.yml');
+    $self->{_graph_api} = eval { YAML::Syck::LoadFile($path) };
+    return $self->{_graph_api};
+}
 
 =head1 NAME
 

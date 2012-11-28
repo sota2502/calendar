@@ -27,6 +27,17 @@ sub index :Path :Args(0) {
     $c->response->body('Matched Calendar::Controller::Event in Event.');
 }
 
+sub main :Chained('/') :PathPart('event') :CaptureArgs(2) {
+    my ( $self, $c, $page_id, $module_id ) = @_;
+
+    $c->stash->{page_id} = $page_id;
+    $c->stash->{module_id} = $module_id;
+}
+
+sub show :Chained('main') :PathPart('') :Args(0) {
+    my ( $self, $c ) = @_;
+    $c->response->body('Matched Calendar::Controller::Event in Event.');
+}
 
 =head1 AUTHOR
 

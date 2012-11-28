@@ -21,15 +21,23 @@ Catalyst Controller.
 
 =cut
 
+=cut
 sub index :Path :Args(2) {
     my ( $self, $c ) = @_;
 
+}
+=cut
+
+sub main :ChainedParent :PathPart('add') :Args(0) {
+    my ( $self, $c ) = @_;
+
+    $c->stash->{template} = 'event/add/index.tt';
 }
 
 =head2 commit
 
 =cut
-sub commit :Local :Args(0) {
+sub  :Local :Args(0) {
     my ($self, $c) = @_;
 
     ## ToDo: require validation
