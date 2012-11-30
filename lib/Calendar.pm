@@ -22,6 +22,9 @@ use Catalyst qw/
     -Debug
     ConfigLoader
     Static::Simple
+    Session
+    Session::Store::FastMmap
+    Session::State::Cookie
 /;
 
 extends 'Catalyst';
@@ -42,6 +45,14 @@ __PACKAGE__->config(
     # Disable deprecated behavior needed by old applications
     disable_component_resolution_regex_fallback => 1,
     enable_catalyst_header => 1, # Send X-Catalyst header
+    'Plugin::Session' => {
+        expires           => 1800,
+        # storage => '/tmp',
+        namespace         => 'Calendar',
+        cookie_expire     => 0,
+        verify_address    => 1,
+        verify_user_agent => 1,
+    },
 );
 
 # Start the application

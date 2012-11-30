@@ -37,7 +37,7 @@ sub main :ChainedParent :PathPart('add') :Args(0) {
 =head2 commit
 
 =cut
-sub  :Local :Args(0) {
+sub commit :Local :Args(0) {
     my ($self, $c) = @_;
 
     ## ToDo: require validation
