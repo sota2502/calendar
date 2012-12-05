@@ -4,7 +4,7 @@
 
 <h1>Event Form</h1>
 
-<form class="form-horizontal well" method="post" action="/event/add/commit">
+<form class="form-horizontal well" method="post" action="/event/[% page_id | url %]/[% module_id | url %]/add/commit">
 <label class="control-label" for="title">Title</label>
 <div class="controls">
 <input type="text" id="title" name="title" value="[% title | html %]" />

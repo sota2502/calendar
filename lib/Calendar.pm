@@ -3,6 +3,7 @@ use Moose;
 use namespace::autoclean;
 use Date::Calc;
 use YAML::Syck;
+use UNIVERSAL::require;
 
 use Catalyst::Runtime 5.80;
 
@@ -64,14 +65,24 @@ sub now {
 
 sub page_id {
     my $c = shift;
-    return $c->req->arguments->[0];
+    return $c->stash->{page_id};
 }
 
 sub module_id {
     my $c = shift;
-    return $c->req->arguments->[1];
+    return $c->stash->{module_id};
 }
 
+sub entity {
+    my ($self, $package) = @_;
+
+    my $namespace = 'Calendar::Entity::' . $package;
+    unless ( $namespace->require ) {
+        return;
+    }
+
+    return $namespace;
+}
 
 sub graph_api {
     my $self = shift;

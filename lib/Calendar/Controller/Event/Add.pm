@@ -28,7 +28,12 @@ sub index :Path :Args(2) {
 }
 =cut
 
-sub main :ChainedParent :PathPart('add') :Args(0) {
+sub main :ChainedParent :PathPart('') :CaptureArgs(0) {
+    my ( $self, $c ) = @_;
+
+}
+
+sub input :Chained('main') :PathPart('add') :Args(0) {
     my ( $self, $c ) = @_;
 
     $c->stash->{template} = 'event/add/index.tt';
@@ -37,28 +42,28 @@ sub main :ChainedParent :PathPart('add') :Args(0) {
 =head2 commit
 
 =cut
-sub commit :Local :Args(0) {
+sub commit :Chained('main') :PathPart('add/commit') :Args(0) {
     my ($self, $c) = @_;
 
     ## ToDo: require validation
-
     my %param = map {
         +($_ => $c->req->param($_))
     } qw/title description scheduled_datetime attend_limit/;
 
-    my $resultset = $c->model('DBIC::Calendar');
     my $now = $c->now;
 
     $param{page_id}   = $c->page_id;
     $param{module_id} = $c->module_id;
     $param{created_datetime} = $now;
 
-    my $row = $resultset->create({%param});
+    my $entity = $c->entity('Event');
+    my $row = $entity->create(%param);
+
     unless ( $row ) {
         $c->response->body('Failed Creating Event');
     }
 
-    my $url = sprintf '/event/view/%d', $row->event_id;
+    my $url = sprintf '/event/%d/%d/view/%d', $c->page_id, $c->module_id, $row->event_id;
 
     $c->res->redirect($c->uri_for($url));
 }
