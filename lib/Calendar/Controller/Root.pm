@@ -41,6 +41,11 @@ Standard 404 error page
 
 sub default :Path {
     my ( $self, $c ) = @_;
+    $c->detach('not_found');
+}
+
+sub not_found :Path {
+    my ( $self, $c ) = @_;
     $c->response->body( 'Page not found' );
     $c->response->status(404);
 }

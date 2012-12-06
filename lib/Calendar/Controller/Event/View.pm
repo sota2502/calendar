@@ -29,7 +29,14 @@ sub index :Path :Args(0) {
 sub main :ChainedParent :PathPart('view') :Args(1) {
     my ( $self, $c, $event_id ) = @_;
 
-    $c->res->body("Event: $event_id");
+    my $event = $c->entity('Event')->lookup(event_id => $event_id);
+    unless ( $event ) {
+        $c->detach('/not_found');
+        return;
+    }
+
+    $c->stash->{event}    = $event;
+    $c->stash->{template} = 'event/view/index.tt';
 }
 
 =head2 default

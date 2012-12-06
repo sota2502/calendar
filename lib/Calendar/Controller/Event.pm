@@ -7,6 +7,7 @@ BEGIN {extends 'Catalyst::Controller'; }
 use JSON::Syck;
 use Crypt::OpenSSL::CA;
 use OAuth::Lite::ServerUtil;
+use Date::Calc;
 
 my $URL = 'http://localhost:3000/event';
 
@@ -40,7 +41,8 @@ sub index :Path :Args(0) {
     }
 
     my $session = $c->stash->{session};
-    my $url = sprintf "/event/%d/%d", $session->{mixi_page_id}, $session->{mixi_module_id};
+    my ($year, $month) = Date::Calc::Today();
+    my $url = sprintf "/event/%d/%d/monthly/%d/%d", $session->{mixi_page_id}, $session->{mixi_module_id}, $year, $month;
     $c->res->redirect($c->uri_for($url));
 }
 
@@ -53,6 +55,13 @@ sub main :Chained('/') :PathPart('event') :CaptureArgs(2) {
 
 sub show :Chained('main') :PathPart('') :Args(0) {
     my ( $self, $c ) = @_;
+
+    my ($year, $month) = Date::Calc::Today();
+
+    my $session = $c->stash->{session};
+    my $url = sprintf "/event/%d/%d/monthly/%d/%d", $session->{mixi_page_id}, $session->{mixi_module_id}, $year, $month;
+    $c->res->redirect($c->uri_for($url));
+
 }
 
 sub has_session {

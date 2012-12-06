@@ -1,0 +1,49 @@
+[% INCLUDE includes/header.tt %]
+
+<div class="container-narrow">
+
+[%# INCLUDE includes/navi.tt %]
+
+<h1>[% year | html %] / [% month | html %]</h1>
+<ul class="pager">
+  <li><a href="[% prev | html %]">Previous</a></li>
+  <li><a href="[% next | html %]">Next</a></li>
+</ul>
+
+<p>
+<a href="/event/add">Add new event</a>
+</p>
+
+
+<table class="table table-bordered">
+<tr>
+<th>Sun</th>
+<th>Mon</th>
+<th>Tue</th>
+<th>Wed</th>
+<th>Thu</th>
+<th>Fri</th>
+<th>Sat</th>
+</tr>
+[% FOREACH week = monthly %]
+  <tr>
+  [% FOREACH day = week %]
+    <td>
+    <p style="text-align:center;vertical-align:middle;font-weight:bold;font-size:large;">[% IF day.count > 0 %][% day.count | html %][% ELSE %]&nbsp;[% END %]</p>
+    <p style="text-align:right;vertical-align:bottom;font-size:small">[% day.day | html %]</p>
+    </td>  
+  [% END %]
+  </tr>
+[% END %]
+</table>
+
+
+<ul class="pager">
+  <li><a href="[% prev | html %]">Previous</a></li>
+  <li><a href="[% next | html %]">Next</a></li>
+</ul>
+
+</div>
+<!-- /div.container -->
+
+[% INCLUDE includes/footer.tt %]
